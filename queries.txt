@@ -1,0 +1,93 @@
+CREATE TABLE IF NOT EXISTS public.member
+(
+    id bigint NOT NULL,
+    created_at timestamp(6) without time zone,
+    updated_at timestamp(6) without time zone,
+    email character varying(255) COLLATE pg_catalog."default",
+    f_name character varying(255) COLLATE pg_catalog."default",
+    l_name character varying(255) COLLATE pg_catalog."default",
+    membership_date timestamp(6) without time zone,
+    phone character varying(255) COLLATE pg_catalog."default",
+    CONSTRAINT member_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.member
+    OWNER to postgres;
+
+----------------------------------------
+
+
+CREATE TABLE IF NOT EXISTS public.book
+(
+    id bigint NOT NULL,
+    created_at timestamp(6) without time zone,
+    updated_at timestamp(6) without time zone,
+    author_name character varying(255) COLLATE pg_catalog."default",
+    available_copies integer,
+    issued_copies integer,
+    publisher character varying(255) COLLATE pg_catalog."default",
+    boo_title character varying(255) COLLATE pg_catalog."default",
+    total_copies integer,
+    year_of_publication integer,
+    CONSTRAINT book_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.book
+    OWNER to postgres;
+
+------------------------------------
+
+CREATE TABLE IF NOT EXISTS public.member_issued_books
+(
+    member_id bigint NOT NULL,
+    issued_books_id bigint NOT NULL,
+    CONSTRAINT member_issued_books_pkey PRIMARY KEY (member_id, issued_books_id),
+    CONSTRAINT fkmr1ie41cqep4qxrxv16a07mq3 FOREIGN KEY (member_id)
+        REFERENCES public.member (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT fkmvgv6eutqsjwk9xiw6f09wmvv FOREIGN KEY (issued_books_id)
+        REFERENCES public.book (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.member_issued_books
+    OWNER to postgres;
+
+------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS public.transaction
+(
+    id bigint NOT NULL,
+    created_at timestamp(6) without time zone,
+    updated_at timestamp(6) without time zone,
+    borrow_date timestamp(6) without time zone,
+    due_date timestamp(6) without time zone,
+    return_date timestamp(6) without time zone,
+    transaction_type smallint,
+    book_id bigint,
+    member_id bigint,
+    CONSTRAINT transaction_pkey PRIMARY KEY (id),
+    CONSTRAINT fk8g210cmyp5dyikvxf9ek6ub30 FOREIGN KEY (member_id)
+        REFERENCES public.member (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT fk8hddvclv2iqa3sg1dm8295pqw FOREIGN KEY (book_id)
+        REFERENCES public.book (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT transaction_transaction_type_check CHECK (transaction_type >= 0 AND transaction_type <= 1)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.transaction
+    OWNER to postgres;
+---------------------------------------------------
